@@ -4,7 +4,7 @@ using UnityEngine;
 public class HeroController : MonoBehaviour
 {
     private HeroCombat _combat;
-    private Movement _movement;
+    private Character _character;
     private Vector3 _dest;
 
     public void Start()
@@ -20,19 +20,19 @@ public class HeroController : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Ground"))
                 {
-                    _combat.enemy = null;
-                    _combat.movement.forceMoving = true;
+                    _combat.forceStop();
+                    _combat.character.forceMoving = true;
 
                     _dest = hit.point;
-                    _combat.movement.SetDestination(_dest);
-                    _combat.movement.Steering(_dest);
+                    _combat.character.SetDestination(_dest);
+                    _combat.character.Steering(_dest);
                 }
             }
         }
 
         if (Vector3.Distance(transform.position, _dest) < 0.1f)
         {
-            _combat.movement.forceMoving = false;
+            _combat.character.forceMoving = false;
         }
     }
 }

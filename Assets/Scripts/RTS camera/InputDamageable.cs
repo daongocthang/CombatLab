@@ -28,7 +28,7 @@ public class InputDamageable : MonoBehaviour
                 else
                 {
                     heroCombat.enemy = targetable.GetGameObject();
-                    heroCombat.movement.forceMoving = false;
+                    heroCombat.character.forceMoving = false;
                 }
             }
         }

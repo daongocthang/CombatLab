@@ -1,19 +1,31 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
 
-public class Movement : MonoBehaviour
+public class Character : MonoBehaviour
 {
+    private const float ANGULAR_SPD = 1200;
+    private const float ACCELERATION = 100;
+    
     [SerializeField] private float rotateSpeedMovement = 0.1f;
     [SerializeField] private float motionSmoothTime = 0.1f;
-    public Animator animator { get; private set; }
+    public Animator animator;
+    public UnitStats stats;
     public NavMeshAgent agent { get; private set; }
     public bool forceMoving { get; set; }
     private float _rotateVelocity;
+    
+
+    private void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+    }
 
     private void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        animator = GetComponent<Animator>();
+        agent.speed = stats.moveSpeed;
+        agent.angularSpeed = ANGULAR_SPD;
+        agent.acceleration = ACCELERATION;
     }
 
     public void Update()

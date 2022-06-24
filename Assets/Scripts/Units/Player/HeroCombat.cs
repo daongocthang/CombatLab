@@ -1,29 +1,18 @@
 ﻿using System.Collections;
+using Interfaces;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HeroCombat : MonoBehaviour
+public class HeroCombat : MonoBehaviour,ITriggerable
 {
-    public enum AttackType
-    {
-        Melee,
-        Ranged
-    }
-
-    [SerializeField]private const float AttackTime = 2f;
-    [SerializeField] private AttackType attackType = AttackType.Melee;
-    [SerializeField] private float attackRange = 2.0f;
-    
-    public float visionRange = 5.0f;
-
-    public GameObject enemy { get; set; }
+    public GameObject enemy;
     public bool performAttack { get; set; }
-    public Movement movement { get; private set; }
+    public Character character { get; private set; }
     private Vector3 _enemyPos;
 
     private void Start()
     {
-        movement = GetComponent<Movement>();
+        character = GetComponent<Character>();
 
         performAttack = true;
     }
@@ -33,22 +22,24 @@ public class HeroCombat : MonoBehaviour
         if (enemy != null)
         {
             _enemyPos = enemy.transform.position;
-            if (Vector3.Distance(transform.position, _enemyPos) > attackRange)
+            var atkRange = character.stats.attackRange;
+            if (Vector3.Distance(transform.position, _enemyPos) > atkRange)
             {
-                movement.SetDestination(_enemyPos, attackRange - 0.25f);
+                character.SetDestination(_enemyPos, atkRange - 0.25f);
             }
             else
             {
-                movement.Steering(_enemyPos);
+                character.Steering(_enemyPos);
                 if (performAttack)
                 {
-                    if (attackType == AttackType.Melee)
+                    var atkType = character.stats.attackType;
+                    if (atkType == UnitStats.AttackType.Melee)
                     {
                         Debug.Log("Melee attacking to enemy");
                         StartCoroutine(MeleeAttackInterval());
                     }
 
-                    if (attackType == AttackType.Ranged)
+                    if (atkType == UnitStats.AttackType.Ranged)
                     {
                         Debug.Log("Ranged attacking to enemy");
                         StartCoroutine(RangedAttackInterval());
@@ -60,19 +51,20 @@ public class HeroCombat : MonoBehaviour
 
     public bool EnableEnemyDetection()
     {
-        return performAttack && (enemy == null) && (movement.forceMoving == false);
+        return performAttack && (enemy == null) && (character.forceMoving == false);
     }
 
     private IEnumerator MeleeAttackInterval()
     {
         performAttack = false;
-       movement.animator.SetBool("NormalAttack", true);
+        character.animator.SetBool("NormalAttack", true);
+        
+        var atkTime = character.stats.attackTime;
+        yield return new WaitForSeconds(atkTime / ((100 + atkTime) * 0.01f));
 
-        yield return new WaitForSeconds(AttackTime / ((100 + AttackTime) * 0.01f));
-
-        if (enemy == null)
+        if (enemy is null)
         {
-            movement.animator.SetBool("NormalAttack", false);
+            character.animator.SetBool("NormalAttack", false);
             performAttack = true;
         }
     }
@@ -80,13 +72,14 @@ public class HeroCombat : MonoBehaviour
     private IEnumerator RangedAttackInterval()
     {
         performAttack = false;
-        movement.animator.SetBool("NormalAttack", true);
+        character.animator.SetBool("NormalAttack", true);
 
-        yield return new WaitForSeconds(AttackTime / ((100 + AttackTime) * 0.01f));
+        var atkTime = character.stats.attackTime;
+        yield return new WaitForSeconds(atkTime / ((100 + atkTime) * 0.01f));
 
         if (enemy == null)
         {
-            movement.animator.SetBool("NormalAttack", false);
+            character.animator.SetBool("NormalAttack", false);
             performAttack = true;
         }
     }
@@ -96,7 +89,7 @@ public class HeroCombat : MonoBehaviour
         if (enemy != null)
         {
             // Damage the enemy
-            Debug.Log("DAMAGE!");
+            Debug.Log("Enemy is damaged");
             performAttack = true;
         }
     }
@@ -108,6 +101,26 @@ public class HeroCombat : MonoBehaviour
             // Spawn projectile
 
             performAttack = true;
+        }
+    }
+
+    public void forceStop()
+    {
+        enemy = null;
+        performAttack = true;
+        character.animator.SetBool("NormalAttack", false);
+    }
+
+    public void OnTriggered()
+    {
+        switch (character.stats.attackType)
+        {
+            case UnitStats.AttackType.Melee:
+                MeleeAttack();
+                break;
+            case UnitStats.AttackType.Ranged:
+                RangedAttack();
+                break;
         }
     }
 }

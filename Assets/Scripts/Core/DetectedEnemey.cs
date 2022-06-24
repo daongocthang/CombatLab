@@ -27,7 +27,7 @@ public class DetectedEnemey : MonoBehaviour
 
     private GameObject FindNearestEnemy()
     {
-        var enemies = Physics.OverlapSphere(transform.position, _combat.visionRange, targetLayerMask);
+        var enemies = Physics.OverlapSphere(transform.position, _combat.character.stats.visionRange, targetLayerMask);
         if (enemies.Length > 0)
         {
             enemies = enemies.OrderBy(e => Vector3.Distance(transform.position, e.transform.position)).ToArray();
