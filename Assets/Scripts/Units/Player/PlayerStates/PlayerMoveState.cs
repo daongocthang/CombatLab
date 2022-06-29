@@ -25,7 +25,7 @@ public class PlayerMoveState : PlayerState
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        var point = GameInput.GetAxis();
+        var point = GameInput.GetAxis().normalized;
         Movement.Move(point, data.moveSpeed);
         Movement.LookRotation(player.transform, point);
 

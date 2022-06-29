@@ -41,7 +41,7 @@ public class PlayerAttackState : PlayerState
             }
             else
             {
-                player.Agent.velocity=Vector3.zero;
+                player.Anim.SetFloat("Speed", 0);
                 if (_performAttack)
                 {
                     Debug.Log("Melee attacking to enemy");
@@ -71,6 +71,7 @@ public class PlayerAttackState : PlayerState
             _opponent = null;
     }
 
+
     private IEnumerator AttackInterval()
     {
         _performAttack = false;
@@ -78,5 +79,11 @@ public class PlayerAttackState : PlayerState
 
         var atkTime = data.attackTime;
         yield return new WaitForSeconds(atkTime / ((100 + atkTime) * 0.01f));
+
+        if (_opponent == null)
+        {
+            player.Anim.SetBool("NormalAttack", false);
+            _performAttack = true;
+        }
     }
 }

@@ -35,10 +35,11 @@ public class Movement : CoreComponent
             return;
         }
 
-        var moveDir = point * speed;
+        var moveDir = point * speed * Time.deltaTime;
+
         if (!_controller.isGrounded)
             moveDir.y -= gravity;
-        _controller.Move(moveDir * Time.deltaTime);
+        _controller.Move(moveDir);
 
         var spd = _controller.velocity.magnitude / speed;
         _anim.SetFloat("Speed", spd, motionSmoothTime, Time.deltaTime);
@@ -52,6 +53,7 @@ public class Movement : CoreComponent
         var spd = _agent.velocity.magnitude / _agent.speed;
         _anim.SetFloat("Speed", spd, motionSmoothTime, Time.deltaTime);
     }
+
     public void LookRotation(Transform intent, Vector3 point)
     {
         if (point == Vector3.zero) return;
