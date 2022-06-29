@@ -14,7 +14,7 @@ namespace FiniteStateMachine
         {
             this.player = player;
             this.stateMachine = stateMachine;
-            this.core = player.core;
+            this.core = player.Core;
             this.data = data;
         }
 

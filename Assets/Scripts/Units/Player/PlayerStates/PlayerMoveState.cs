@@ -3,24 +3,40 @@ using UnityEngine;
 
 public class PlayerMoveState : PlayerState
 {
-    private float _inputX, _inputZ;
+    private Movement Movement => _movement ?? core.GetCoreComponent(ref _movement);
+    private Movement _movement;
+
+    private GameInput GameInput => _gameInput ?? core.GetCoreComponent(ref _gameInput);
+    private GameInput _gameInput;
+    private bool _attack;
 
     public PlayerMoveState(Player player, PlayerStateMachine stateMachine, UnitData data) : base(player,
         stateMachine, data)
     {
     }
 
+    public override void Enter()
+    {
+        base.Enter();
+        GameInput.OnAttack(delegate { _attack = true; });
+        player.Controller.enabled = true;
+    }
+
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        player.MoveTo(_inputX, _inputZ);
+        var point = GameInput.GetAxis();
+        Movement.Move(point, data.moveSpeed);
+        Movement.LookRotation(player.transform, point);
+
+        if (_attack)
+            stateMachine.ChangeState(player.AttackState);
     }
 
-    public override void DoChecks()
+    public override void Exit()
     {
-        base.DoChecks();
-        _inputX = player.joystickHandler.InputHorizontal;
-        _inputZ = player.joystickHandler.InputVertical;
-        Debug.Log($"{_inputX}/{_inputZ}");
+        base.Exit();
+        _attack = false;
+        player.Controller.enabled = false;
     }
 }

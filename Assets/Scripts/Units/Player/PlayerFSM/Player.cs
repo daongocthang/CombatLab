@@ -6,88 +6,47 @@ using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
-    private const float AngularSpeed = 1200;
-    private const float Acceleration = 100;
-
-    [SerializeField] private float motionSmoothTime = 0.1f;
-    [SerializeField] private float rotationSpeed = 5.0f;
-    [SerializeField] private float gravity = 1.0f;
-
     [SerializeField] private UnitData data;
-    public Animator anim { get; private set; }
-    public JoystickHandler joystickHandler { get; private set; }
-    public PlayerStateMachine stateMachine { get; private set; }
-    public Core core { get; private set; }
 
-    private CharacterController _playerCtrl;
-    private NavMeshAgent _agent;
-    private float rotateVelocity;
+    public Animator Anim { get; private set; }
+    public Core Core { get; private set; }
+    public CharacterController Controller { get; private set; }
+    public NavMeshAgent Agent { get; private set; }
 
+    private PlayerStateMachine _stateMachine;
+
+
+    // Player States
     public PlayerMoveState MoveState { get; private set; }
+    public PlayerAttackState AttackState { get; private set; }
 
     private void Awake()
     {
-        core = GetComponentInChildren<Core>();
-        stateMachine = new PlayerStateMachine();
+        Core = GetComponentInChildren<Core>();
+        _stateMachine = new PlayerStateMachine();
         // New states
-        MoveState = new PlayerMoveState(this, stateMachine, data);
+        MoveState = new PlayerMoveState(this, _stateMachine, data);
+        AttackState = new PlayerAttackState(this, _stateMachine, data);
     }
 
     private void Start()
     {
-        anim = GetComponentInChildren<Animator>();
-        joystickHandler = GameObject.FindWithTag("Joystick").GetComponent<JoystickHandler>();
-        _playerCtrl = GetComponent<CharacterController>();
-        _agent = GetComponent<NavMeshAgent>();
+        Anim = GetComponentInChildren<Animator>();
+        Controller = GetComponent<CharacterController>();
+        Agent = GetComponent<NavMeshAgent>();
 
-        _agent.angularSpeed = AngularSpeed;
-        _agent.acceleration = Acceleration;
-        _agent.speed = data.moveSpeed;
-
-        stateMachine.Initialize(MoveState);
+        Agent.speed = data.moveSpeed;
+        _stateMachine.Initialize(MoveState);
     }
 
     private void Update()
     {
-        core.LogicUpdate();
-        stateMachine.currentState.LogicUpdate();
+        Core.LogicUpdate();
+        _stateMachine.currentState.LogicUpdate();
     }
 
     private void FixedUpdate()
     {
-        stateMachine.currentState.PhysicUpdate();
-    }
-
-    public void MoveTo(float inputX, float inputZ)
-    {
-        var lookDir = new Vector3(inputX, 0, inputZ);
-
-        if (lookDir != Vector3.zero)
-        {
-            var rotation = Quaternion.LookRotation(lookDir);
-            transform.rotation = Quaternion.Lerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
-        }
-
-        var moveDir = lookDir * data.moveSpeed;
-        if (!_playerCtrl.isGrounded)
-            moveDir.y -= gravity;
-        _playerCtrl.Move(moveDir * Time.deltaTime);
-
-        var spd = _playerCtrl.velocity.magnitude / data.moveSpeed;
-        anim.SetFloat("Speed", spd, motionSmoothTime, Time.deltaTime);
-    }
-
-    public void MoveAttack(Vector3 targetPos, float range)
-    {
-        _agent.SetDestination(targetPos);
-        _agent.stoppingDistance = range;
-
-        var rotationToLookAt = Quaternion.LookRotation(targetPos - transform.position);
-        var rotationY = Mathf.SmoothDampAngle(transform.eulerAngles.y,
-            rotationToLookAt.eulerAngles.y,
-            ref rotateVelocity,
-            rotationSpeed * (Time.deltaTime * 5));
-
-        transform.eulerAngles = new Vector3(0, rotationY, 0);
+        _stateMachine.currentState.PhysicUpdate();
     }
 }

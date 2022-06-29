@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Core : MonoBehaviour
 {
-    private readonly List<CoreComponent> components = new List<CoreComponent>();
+    private readonly List<CoreComponent> _components = new List<CoreComponent>();
 
     public void LogicUpdate()
     {
-        foreach (var comp in components)
+        foreach (var comp in _components)
         {
             comp.LogicUpdate();
         }
@@ -16,15 +16,15 @@ public class Core : MonoBehaviour
 
     public void AddComponent(CoreComponent component)
     {
-        if (!components.Contains(component))
+        if (!_components.Contains(component))
         {
-            components.Add(component);
+            _components.Add(component);
         }
     }
 
     public T GetCoreComponent<T>() where T : CoreComponent
     {
-        var comp = components.OfType<T>().FirstOrDefault();
+        var comp = _components.OfType<T>().FirstOrDefault();
         if (comp == null)
         {
             Debug.LogWarning($"{typeof(T)} not found on {transform.parent.name}");
