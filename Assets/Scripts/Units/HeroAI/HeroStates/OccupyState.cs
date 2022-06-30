@@ -3,7 +3,14 @@ using UnityEngine;
 
 public class OccupyState : State
 {
+    private Detector Detector => _detector ?? core.GetCoreComponent(ref _detector);
+    private Detector _detector;
+
+    private Movement Movement => _movement ?? core.GetCoreComponent(ref _movement);
+    private Movement _movement;
+
     private GameObject occupiable;
+    private bool detectedOpancy;
 
     private Hero _hero;
 
@@ -13,29 +20,34 @@ public class OccupyState : State
         _hero = hero;
     }
 
-    public override void Enter()
-    {
-        base.Enter();
-        occupiable = entity.FindNearestInWorld("Occupancy");
-    }
-
     public override void LogicUpdate()
     {
         base.LogicUpdate();
-        if (occupiable != null)
+
+        if (detectedOpancy)
         {
-            if (Vector3.Distance(entity.transform.position, occupiable.transform.position) > data.attackRange)
-            {
-                entity.MoveTo(occupiable.transform.position, data.attackRange);
-                entity.Steering(occupiable.transform.position);
-            }
+            Movement.AutoMove(occupiable.transform.position, data.attackRange);
         }
 
-        var opp = entity.FindNearestInRange(_hero.OpponentTag, data.visionRange);
+        var opp = Detector.FindNearestInRange(_hero.OpponentTag, data.visionRange);
         if (opp != null)
         {
             entity.target = opp;
             stateMachine.ChangeState(_hero.CombatState);
+        }
+    }
+
+    public override void DoChecks()
+    {
+        base.DoChecks();
+
+        if (occupiable)
+        {
+            detectedOpancy = Detector.CheckTargetOutOfRange(occupiable, data.attackRange);
+        }
+        else
+        {
+            occupiable = Detector.FindNearestInWorld("Occupancy");
         }
     }
 }

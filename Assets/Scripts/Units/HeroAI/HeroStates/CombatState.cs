@@ -30,6 +30,6 @@ public class CombatState : AttackState
     public override void DoChecks()
     {
         base.DoChecks();
-        outOfVision = entity.CheckTargetOutOfRange(data.visionRange);
+        outOfVision = Detector.CheckTargetOutOfRange(entity.target, data.visionRange);
     }
 }

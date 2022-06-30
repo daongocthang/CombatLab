@@ -47,7 +47,17 @@ public class Movement : CoreComponent
         _agent.stoppingDistance = range;
     }
 
-    public void LookRotation(Transform intent, Vector3 point)
+    public void LookAt(Transform intent, Vector3 point)
+    {
+        var rotationToLookAt = Quaternion.LookRotation(point - transform.position);
+        var rotationY = Mathf.SmoothDampAngle(intent.eulerAngles.y,
+            rotationToLookAt.eulerAngles.y,
+            ref _rotateVelocity,
+            rotationSpeed * (Time.deltaTime * 5));
+        intent.eulerAngles = new Vector3(0, rotationY, 0);
+    }
+
+    public void Steering(Transform intent, Vector3 point)
     {
         if (point == Vector3.zero) return;
 

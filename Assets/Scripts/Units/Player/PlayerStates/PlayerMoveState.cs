@@ -27,7 +27,7 @@ public class PlayerMoveState : PlayerState
         base.LogicUpdate();
         var point = GameInput.GetAxis().normalized;
         Movement.ManualMove(point, data.moveSpeed);
-        Movement.LookRotation(player.transform, point);
+        Movement.Steering(player.transform, point);
 
         if (_attack)
             stateMachine.ChangeState(player.AttackState);

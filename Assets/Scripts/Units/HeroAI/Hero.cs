@@ -3,11 +3,10 @@
 public class Hero : Entity
 {
     [SerializeField] private UnitData data;
-    [SerializeField] private UnitData.SideType opponent;
+
 
     public OccupyState OccupyState { get; private set; }
     public CombatState CombatState { get; private set; }
-
 
     public override void Awake()
     {
@@ -19,9 +18,20 @@ public class Hero : Entity
     public override void Start()
     {
         base.Start();
+        Stats.MaxHealth = data.maxHealth;
+        Stats.IncreaseHealth(data.maxHealth);
+        Stats.DisplayUI(false);
 
         stateMachine.Initialize(OccupyState);
     }
 
-    public string OpponentTag => opponent.ToString();
+    public override void Damage(float amount)
+    {
+        Stats.DisplayUI(true);
+        Stats.DecreaseHealth(amount);
+        if (Stats.EmptyHealth)
+            Destroy(gameObject);
+    }
+
+    public string OpponentTag => gameObject.tag switch {"Enemy" => "Player", "Player" => "Enemy", _ => ""};
 }

@@ -42,6 +42,7 @@ public class PlayerAttackState : PlayerState
             }
             else
             {
+                Movement.LookAt(player.transform, _opponent.transform.position);
                 if (_performAttack)
                 {
                     Debug.Log("Melee attacking to enemy");

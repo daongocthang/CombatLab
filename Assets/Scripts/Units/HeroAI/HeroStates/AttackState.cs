@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class AttackState : State
 {
+    protected Movement Movement => _movement ? _movement : core.GetCoreComponent(ref _movement);
+    private Movement _movement;
+
+    protected Detector Detector => _detector ? _detector : core.GetCoreComponent(ref _detector);
+    private Detector _detector;
+
     protected bool performAttack;
     protected bool outOfAtkRange;
 
@@ -20,11 +26,11 @@ public class AttackState : State
             var enemyPos = entity.target.transform.position;
             if (outOfAtkRange)
             {
-                entity.MoveTo(enemyPos, data.attackRange - 0.25f);
+                Movement.AutoMove(enemyPos, data.attackRange - 0.1f);
             }
             else
             {
-                entity.Steering(enemyPos);
+                Movement.LookAt(entity.transform, entity.target.transform.position);
                 if (performAttack)
                 {
                     Debug.Log("Melee attacking to enemy");
@@ -37,7 +43,7 @@ public class AttackState : State
     public override void DoChecks()
     {
         base.DoChecks();
-        outOfAtkRange = entity.CheckTargetOutOfRange(data.attackRange);
+        outOfAtkRange = Detector.CheckTargetOutOfRange(entity.target, data.attackRange);
     }
 
     public override void Exit()
