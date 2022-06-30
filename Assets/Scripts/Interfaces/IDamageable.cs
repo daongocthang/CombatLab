@@ -2,5 +2,6 @@
 
 public interface IDamageable
 {
-    GameObject GetGameObject();
+    void Damage(float amount);
+
 }

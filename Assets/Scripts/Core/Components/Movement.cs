@@ -7,7 +7,6 @@ public class Movement : CoreComponent
     private const float AngularSpeed = 1200;
     private const float Acceleration = 100;
 
-    [SerializeField] private float motionSmoothTime = 0.1f;
     [SerializeField] private float rotationSpeed = 5.0f;
     [SerializeField] private float gravity = 1.0f;
 
@@ -27,7 +26,7 @@ public class Movement : CoreComponent
         _agent.angularSpeed = AngularSpeed;
     }
 
-    public void Move(Vector3 point, float speed)
+    public void ManualMove(Vector3 point, float speed)
     {
         if (_controller == null)
         {
@@ -40,18 +39,12 @@ public class Movement : CoreComponent
         if (!_controller.isGrounded)
             moveDir.y -= gravity;
         _controller.Move(moveDir);
-
-        var spd = _controller.velocity.magnitude / speed;
-        _anim.SetFloat("Speed", spd, motionSmoothTime, Time.deltaTime);
     }
 
-    public void MeshMove(Vector3 point, float range = 0)
+    public void AutoMove(Vector3 point, float range = 0)
     {
         _agent.SetDestination(point);
         _agent.stoppingDistance = range;
-
-        var spd = _agent.velocity.magnitude / _agent.speed;
-        _anim.SetFloat("Speed", spd, motionSmoothTime, Time.deltaTime);
     }
 
     public void LookRotation(Transform intent, Vector3 point)

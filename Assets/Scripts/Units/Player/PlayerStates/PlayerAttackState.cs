@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using FiniteStateMachine;
+using Interfaces;
 using UnityEngine;
 
 public class PlayerAttackState : PlayerState
@@ -37,11 +38,10 @@ public class PlayerAttackState : PlayerState
         {
             if (_outOfAtkRange)
             {
-                Movement.MeshMove(_opponent.transform.position, data.attackRange - 0.25f);
+                Movement.AutoMove(_opponent.transform.position, data.attackRange - 0.1f);
             }
             else
             {
-                player.Anim.SetFloat("Speed", 0);
                 if (_performAttack)
                 {
                     Debug.Log("Melee attacking to enemy");
@@ -84,6 +84,16 @@ public class PlayerAttackState : PlayerState
         {
             player.Anim.SetBool("NormalAttack", false);
             _performAttack = true;
+        }
+    }
+
+    public override void AnimTrigger()
+    {
+        base.AnimTrigger();
+        if (_opponent != null)
+        {
+            var damageable = _opponent.GetComponent<IDamageable>();
+            damageable?.Damage(data.damage);
         }
     }
 }

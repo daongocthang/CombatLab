@@ -1,11 +1,13 @@
 ﻿using System;
 using FiniteStateMachine;
+using Interfaces;
 using UnityEngine;
 using UnityEngine.AI;
 
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour,ITriggerable
 {
+    [SerializeField] private float motionSmoothTime = 0.1f;
     [SerializeField] private UnitData data;
 
     public Animator Anim { get; private set; }
@@ -37,16 +39,28 @@ public class Player : MonoBehaviour
 
         Agent.speed = data.moveSpeed;
         _stateMachine.Initialize(MoveState);
+
+        Agent.enabled = false;
     }
 
     private void Update()
     {
         Core.LogicUpdate();
         _stateMachine.currentState.LogicUpdate();
+
+        var spd = Agent.enabled
+            ? Agent.velocity.magnitude / Agent.speed
+            : Controller.velocity.magnitude / data.moveSpeed;
+        Anim.SetFloat("Speed", spd, motionSmoothTime, Time.deltaTime);
     }
 
     private void FixedUpdate()
     {
         _stateMachine.currentState.PhysicUpdate();
+    }
+
+    public void OnTriggered()
+    {
+        _stateMachine.currentState.AnimTrigger();
     }
 }
