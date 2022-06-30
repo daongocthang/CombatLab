@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class CombatDummy : MonoBehaviour, IDamageable
 {
@@ -10,6 +11,10 @@ public class CombatDummy : MonoBehaviour, IDamageable
     private void Awake()
     {
         _core = GetComponentInChildren<Core>();
+    }
+
+    private void Start()
+    {
         Stats.MaxHealth = MaxHealth;
         Stats.IncreaseHealth(MaxHealth);
         Stats.DisplayUI(false);

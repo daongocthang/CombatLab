@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using UnityEditor.UIElements;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Hero : Entity
 {
