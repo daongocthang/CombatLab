@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
-public class Player : MonoBehaviour,ITriggerable
+public class Player : MonoBehaviour,ITriggerable,IParcelable
 {
     [SerializeField] private float motionSmoothTime = 0.1f;
     [SerializeField] private UnitData data;
@@ -62,5 +62,10 @@ public class Player : MonoBehaviour,ITriggerable
     public void OnTriggered()
     {
         _stateMachine.currentState.AnimTrigger();
+    }
+
+    public UnitData GetData()
+    {
+        return data;
     }
 }

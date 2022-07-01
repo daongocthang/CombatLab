@@ -1,4 +1,5 @@
-﻿using FiniteStateMachine;
+﻿using System.Xml;
+using FiniteStateMachine;
 using UnityEngine;
 
 
@@ -31,5 +32,15 @@ public class CombatState : AttackState
     {
         base.DoChecks();
         outOfVision = Detector.CheckTargetOutOfRange(entity.target, data.visionRange);
+    }
+
+    public override void AnimTrigger()
+    {
+        base.AnimTrigger();
+        if (entity.target != null)
+        {
+            var damageable = entity.target.GetComponentInChildren<IDamageable>();
+            damageable?.Damage(data.damage);
+        }
     }
 }

@@ -93,7 +93,7 @@ public class PlayerAttackState : PlayerState
         base.AnimTrigger();
         if (_opponent != null)
         {
-            var damageable = _opponent.GetComponent<IDamageable>();
+            var damageable = _opponent.GetComponentInChildren<IDamageable>();
             damageable?.Damage(data.damage);
         }
     }

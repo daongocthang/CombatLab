@@ -3,8 +3,6 @@
 public class Hero : Entity
 {
     [SerializeField] private UnitData data;
-
-
     public OccupyState OccupyState { get; private set; }
     public CombatState CombatState { get; private set; }
 
@@ -18,20 +16,20 @@ public class Hero : Entity
     public override void Start()
     {
         base.Start();
-        Stats.MaxHealth = data.maxHealth;
-        Stats.IncreaseHealth(data.maxHealth);
-        Stats.DisplayUI(false);
+
 
         stateMachine.Initialize(OccupyState);
     }
 
-    public override void Damage(float amount)
+    public string OpponentTag => gameObject.tag switch {"Enemy" => "Player", "Player" => "Enemy", _ => ""};
+
+    public override UnitData GetData()
     {
-        Stats.DisplayUI(true);
-        Stats.DecreaseHealth(amount);
-        if (Stats.EmptyHealth)
-            Destroy(gameObject);
+        return data;
     }
 
-    public string OpponentTag => gameObject.tag switch {"Enemy" => "Player", "Player" => "Enemy", _ => ""};
+    public override void OnTriggered()
+    {
+        stateMachine.currentState.AnimTrigger();
+    }
 }

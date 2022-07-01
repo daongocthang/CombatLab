@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Linq;
 using FiniteStateMachine;
+using Interfaces;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Entity : MonoBehaviour, IDamageable
+public class Entity : MonoBehaviour,IParcelable,ITriggerable
 {
     private const float AngularSpeed = 1200;
     private const float Acceleration = 100;
 
     [SerializeField] private float motionSmoothTime = 0.1f;
+    
 
     public Animator anim { get; private set; }
     public NavMeshAgent agent { get; private set; }
@@ -18,9 +20,6 @@ public class Entity : MonoBehaviour, IDamageable
 
     public GameObject target { get; set; }
 
-    protected Stats Stats => _stats ?? core.GetCoreComponent(ref _stats);
-    private Stats _stats; 
-        
 
     public virtual void Awake()
     {
@@ -51,13 +50,12 @@ public class Entity : MonoBehaviour, IDamageable
         stateMachine.currentState.PhysicUpdate();
     }
 
-    public void MoveTo(Vector3 targetPos, float stopRange = 0)
+    public virtual UnitData GetData()
     {
-        agent.SetDestination(targetPos);
-        agent.stoppingDistance = stopRange;
+        return null;
     }
 
-    public virtual void Damage(float amount)
+    public virtual void OnTriggered()
     {
     }
 }

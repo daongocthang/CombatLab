@@ -69,8 +69,8 @@ public class AttackState : State
     }
 
 
-    public virtual void TriggerAttack()
+    public override void AnimTrigger()
     {
-        Debug.Log("damage");
+        base.AnimTrigger();
     }
 }
