@@ -5,16 +5,22 @@ using UnityEngine.UI;
 public class Stats : CoreComponent
 {
     [SerializeField] private float cooldown = 5.0f;
+    [SerializeField] private bool alwaysDisplay;
     public bool EmptyHealth { get; private set; }
+    private bool _hidden;
     public float MaxHealth { get; set; }
     private float _health;
     private Slider _healthBar;
-    private float _sandTime;
-    private bool _hidden;
+    private SandTimer _sandTimer;
+
     private void Start()
     {
         _healthBar = GetComponentInChildren<Slider>();
-        DisplayUI(false);
+        if (!alwaysDisplay)
+        {
+            _sandTimer = new SandTimer(delegate { DisplayUI(false); }, cooldown);
+            DisplayUI(false);
+        }
     }
 
     public override void LogicUpdate()
@@ -26,14 +32,10 @@ public class Stats : CoreComponent
     private void LateUpdate()
     {
         transform.LookAt(transform.position + Camera.main.transform.forward);
-        if (_sandTime > 0)
+        _sandTimer?.RunAfterDelayed();
+        if (alwaysDisplay && _hidden)
         {
-            _sandTime -= 1 / cooldown * Time.deltaTime;
-            if (_sandTime <= 0)
-            {
-                _sandTime = 0;
-                DisplayUI(false);
-            }
+            DisplayUI(true);
         }
     }
 
@@ -57,12 +59,11 @@ public class Stats : CoreComponent
 
     public void DisplayUI(bool enable)
     {
-        if (enable) _sandTime = 1;
-        
-        if(_hidden!=enable) return;
+        if (enable) _sandTimer?.Start();
+
+        if (_hidden != enable) return;
         _hidden = !enable;
         GetComponent<Canvas>().enabled = enable;
-        
     }
 
     private float GetHealthNormalized()

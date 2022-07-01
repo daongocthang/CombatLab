@@ -1,5 +1,4 @@
 ﻿using Interfaces;
-using ScriptableObjects;
 using UnityEngine;
 
 namespace FiniteStateMachine

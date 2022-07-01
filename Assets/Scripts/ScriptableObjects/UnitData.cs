@@ -4,7 +4,8 @@ public class UnitData : ScriptableObject
 {
 
     [Header("Basic Stats")] 
-    public float maxHealth;
+    public float hp;
+    public float hp5;
     public float damage;
 
     [Header("Move Stats")]

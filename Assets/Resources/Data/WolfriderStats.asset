@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 091719d170d345ebab70bfc4fab79e21, type: 3}
   m_Name: WolfriderStats
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  hp: 100
+  hp5: 5
   damage: 10
   moveSpeed: 8
   attackType: 0
